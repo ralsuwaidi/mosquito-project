@@ -1,0 +1,45 @@
+
+\documentclass[a4paper,12pt,twoside]{report}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=3cm]{geometry}
+\usepackage{pdflscape}
+
+\include{thesis.preamble}
+
+%anything with comment i changed for lit review, change back for final. In icthesis.sty i changed body environment
+
+\begin{document}
+
+\title{\LARGE {\bf A VR System to Aid Understanding of Mosquito Behaviour}\\
+ \vspace*{6mm}
+}
+
+\author{Rashid Al Suwaidi  \\{\small Supervised by: Professor David Towers}}
+\submitdate{\today}
+
+\normallinespacing
+\maketitle
+
+%\preface
+%\input{abstract/abstract}
+%\input{acknowledgements/acknowledgements}
+%\input{dedication/dedication}
+%\input{quotes/quotes}
+
+\body
+%\input{introduction/introduction}
+%\tableofcontents
+%\input{background/background}
+\input{Chapter2/ch2}
+% body of thesis comes here
+
+%\input{conclusion/conclusion}
+
+\appendix
+% appendices come here
+
+
+\addcontentsline{toc}{chapter}{Bibliography}
+\bibliographystyle{ieeetr}
+\bibliography{bibliography/bibliography}
+
+\end{document}
