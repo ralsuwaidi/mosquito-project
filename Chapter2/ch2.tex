@@ -73,4 +73,9 @@ x	            y	      z	  t           #
 ...
 \end{minted}
 
-Where x and y is the planar fields and z is the vertical axis. Time is denoted by t, as it stands, the time increments can be as fast as 0.02 seconds. The \# indicates the mosquito number 
+Where x and y is the planar fields and z is the vertical axis. Time is denoted by t, as it stands, the time increments can be as fast as 0.02 seconds.
+
+The data records more around 333 instances of mosquito data points. Each data point is followed by the next one within a few milliseconds. Since the time-frame between the data is very small it can be assumed that the momentum and inertia is then captured by the data. Since the mosquito momentum does not have to be simulated it is possible to convert the data from the format above into unity in a relatively straight foreword manner.
+
+First the mosquito data has to be written in a form understood by unity. I chose to use an array that holds all the three dimensional points and another array that holds time. The idea is to progress through both arrays sequentially, i.e., the geometry will stay in an array position and only progress to the next position when the respective time is realised. This will make the object appear in one position and then disappear to reappear in another position. Due to the small time-frame between the data points, the movement should appear smooth. 
+
