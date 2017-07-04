@@ -1,4 +1,4 @@
-Rashid Al Suwaidi – MSc Literature Review Report
+## MSc Literature Review Report
 
 The report is extremely well referenced and the quality of English is high. The review covers aspects of mosquito behaviour and VR systems and presents balanced and well structured arguments about both topics. The novel features of the project are well expressed. I think a short section could be added to explain how the input data to the project has been captured, referring to the paper presented at the Optical Society of America meeting on 3D imaging and holographic microscopy in July 2016.
 
