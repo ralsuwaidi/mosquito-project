@@ -20,6 +20,8 @@ Will give the variable \code{initialPosition} a three dimensional coordinate of 
 \subsection{Moving a sphere in Unity}
 To understand how objects and scripts work I wrote a code to manipulate an object making it move towards another object. First a sphere and a cube is made in the 3D environment. The cube acts as a target for the sphere to move towards. This is done to test the speed, acceleration, weight and drag effects on the sphere as it moves towards the cube. The script should contain these instructions and the expected output is that the sphere will accelerate towards the cube, passing through it, then change direction and repeat the process. Due to the introduction of drag, the sphere should oscillate before coming to a halt exactly in the same position as the cube.
 
+\bigskip
+\begin{code1}
 \begin{minted}[
 linenos, 
 bgcolor=bg,
@@ -37,9 +39,12 @@ public class ExampleClass : MonoBehaviour {
     }
 }
 \end{minted}
+\captionof{listing}{Script to move a sphere to a target with a set speed.}
+\label{code:TestMove}
+\end{code1}
 
 
-The code shows one method of moving an object towards another object. The first two lines are called namespaces. They help organise the script and prevent conflict between scripts. Both (UnityEngine) and (System.Collections) are namespaces and the \code{using} function means that anything in the namespace that follows can be used in the script. This is seen in the 5th line of the code where the \code{Transform} function is used without defining what function since the declaration of the function is already done in the (UnityEngine) namespace. 
+Code \ref{code:TestMove} shows one method of moving an object towards another object. The first two lines are called namespaces. They help organise the script and prevent conflict between scripts. Both (UnityEngine) and (System.Collections) are namespaces and the \code{using} function means that anything in the namespace that follows can be used in the script. This is seen in the 5th line of the code where the \code{Transform} function is used without defining what function since the declaration of the function is already done in the (UnityEngine) namespace. 
 
 The \code{Transform} variable is used extensively in unity. From the unity documentation, the \code{Transform} variable is described as a method to`manipulate the position, rotation and scale of the object. Every Transform can have a parent, which allows you to apply position, rotation and scale hierarchically.'
 
@@ -57,9 +62,11 @@ When the script is attached to an object it will make the geometry move towards 
 
 
 
-\subsection{The Mosquito Data}
-The mosquito data gathered by my supervisor, Professor David Towers and his team, is in the form shown below.
+\subsection{Processing The Mosquito Data}
+The mosquito data gathered by my supervisor, Professor David Towers and his team, is in the form shown in Source Code \ref{code:FlyData}.
 
+\bigskip
+\begin{code1}
 \begin{minted}[
 linenos, 
 bgcolor=bg,
@@ -72,10 +79,72 @@ x	            y	      z	  t           #
 -151.325	-220.371	290.883	6.96	0
 ...
 \end{minted}
+\captionof{listing}{Raw mosquitoe flight data gathered from field testing}
+\label{code:FlyData}
+\end{code1}
 
 Where x and y is the planar fields and z is the vertical axis. Time is denoted by t, as it stands, the time increments can be as fast as 0.02 seconds.
 
-The data records more around 333 instances of mosquito data points. Each data point is followed by the next one within a few milliseconds. Since the time-frame between the data is very small it can be assumed that the momentum and inertia is then captured by the data. Since the mosquito momentum does not have to be simulated it is possible to convert the data from the format above into unity in a relatively straight foreword manner.
+The data records more around 333 instances of mosquitoes with around 14 thousand data points. Each data point is followed by the next one within a few milliseconds. Since the time-frame between the data is very small it can be assumed that the momentum and inertia is then captured by the data. Since the mosquito momentum does not have to be simulated it is possible to convert the data from the format above into unity in a relatively straight foreword manner.
 
 First the mosquito data has to be written in a form understood by unity. I chose to use an array that holds all the three dimensional points and another array that holds time. The idea is to progress through both arrays sequentially, i.e., the geometry will stay in an array position and only progress to the next position when the respective time is realised. This will make the object appear in one position and then disappear to reappear in another position. Due to the small time-frame between the data points, the movement should appear smooth. 
 
+An example of the source code used to change the data from text into \code{C\#} is shown in Appendix A. The code looks at the data, line by line, and then makes a \code{Vector3} variable with the appropriate x,y and z dimensional information. The data can then be understood by unity as an array of three dimensional data. The same thing can be done for time as well where the array will display time as a number of floats (decimal values).
+
+\subsection{Testing the Real-Time data in Unity }
+
+To test the code in Unity I first made a 3D bed-net with the appropriate dimensions used in the field. I also made a ground plane to act as the reference for the mosquito data to find out how far above the ground the mosquito flew. These were made in a 3D animation software and then exported into unity. 
+
+\fig{bedWithFly}{Bednet in Unity. The sphere hovering over the bed-net acts as the mosquito with the flight data attached to it.}{0.5}
+
+The first part of Source Code \ref{code:InitialiseArrays} initialises the variables and functions. A \code{Vector3} array is initialised in line 2 with the name \code{positionArray} this holds the raw dimensional data of the mosquitoes. The array holding the temporal data is named \code{times} and both arrays made such that the dimensional information in the first instance of \code{positionArray} will have the ascociated time recorded in the first instance of the \code{times} array. 4591 data points are used in this case which constitutes to around 30 seconds of flight data.
+
+\bigskip
+\begin{code1}
+\begin{minted}[
+linenos, 
+bgcolor=bg,
+fontsize=\footnotesize,
+baselinestretch=1.2]{csharp}
+...
+private Vector3[] positionArray = new Vector3[4591];
+	private float[] times = new float[4591];
+	private int posIndex;
+	public int scale;
+	private float currTime;
+
+	void Start () {
+		positionArray[0] = new Vector3(-166.857f, 344.052f, -217.37f);
+		positionArray[1] = new Vector3(-163.89f, 332.836f, -223.561f);
+...
+\end{minted}
+
+\captionof{listing}{Used to initialise the mosquito raw data code in Unity}
+\label{code:InitialiseArrays}
+\end{code1}
+
+The temporal and dimensional are assigned to separate arrays and then a code is made to sequentially run through each array in order. The array index is updated when the respective time in the array is equal to the time since the simulation starts, that triggers a command for the next position array to get updated as well.
+
+The \code{void Start () \{...\}} function only runs once at the first frame after starting the simulation. That is when the time and dimensional arrays are initialised. Everything else is running in the function \code{void Update () \{...\}} which is updated every frame. The time since the start of the simulation is assigned to the variable \code{currTime}. The issue with using frames as time measurements is overcome with the use of \code{Time.realtimeSinceStartup} which is set in \code{UnityEngine} and returns times in seconds that is frame-rate independent. 
+
+\bigskip
+\begin{code1}
+\begin{minted}[
+linenos, 
+bgcolor=bg,
+fontsize=\footnotesize,
+baselinestretch=1.2]{csharp}
+...
+	void Update () {
+		currTime = Time.realtimeSinceStartup;
+		if (currTime>times[posIndex]){
+			transform.position = positionArray [posIndex]/scale;
+			posIndex++;
+			if(posIndex>positionArray.Length){
+				posIndex = 0;
+			}
+...
+\end{minted}
+\captionof{listing}{Changes object's position to match the data.}
+\label{code:c-code}
+\end{code1}

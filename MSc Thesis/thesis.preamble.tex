@@ -6,6 +6,7 @@
 \usepackage{setspace}
 \usepackage{dirtytalk}
 \usepackage{booktabs}
+\usepackage{caption}
 
 \input{blocked.sty}
 \input{uhead.sty}
@@ -13,11 +14,14 @@
 \input{icthesis.sty}
 \usepackage{textcomp}
 \usepackage{xcolor}
-\usepackage{minted}
+\usepackage[newfloat]{minted}
 \definecolor{bg}{rgb}{0.95,0.95,0.95}
 \setmintedinline{bgcolor={bg}}
 \definecolor{light-gray}{gray}{0.95}
 \newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+
+\newenvironment{code1}{\captionsetup{type=listing}}{}
+\SetupFloatingEnvironment{listing}{name=Source Code}
 
 \newcommand{\ipc}{{\sf ipc}}
 
