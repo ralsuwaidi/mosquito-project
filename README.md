@@ -17,7 +17,7 @@
 ## To-Do:
 1. Write up all things I did
   - ~~test movement code~~
-  - data and conversion into unity
-  - making the environment
-  - making the bed-net
+  - ~~data and conversion into unity~~
+  - ~~making the environment~~
+  - ~~making the bed-net~~
 2. Make a way to split the data into different mosquitoes
