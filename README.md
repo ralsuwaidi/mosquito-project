@@ -21,3 +21,5 @@
   - ~~making the environment~~
   - ~~making the bed-net~~
 2. Make a way to split the data into different mosquitoes
+  - Instantiate every instance of the mosquito and destroy the previous one
+3. Make camera Follow mosquito movement
