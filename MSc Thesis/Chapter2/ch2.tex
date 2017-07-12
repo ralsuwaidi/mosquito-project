@@ -1,29 +1,31 @@
-\chapter{Integrating Mosquito Flight Data into a Virtual Environment}
+\chapter{(Method) Integrating Mosquito Flight Data into a Virtual Environment}
 
-This chapter focuses on adapting real world mosquito flight data and projecting it into a virtual environment (VE). As stated previously, Unity is chosen for this task due to the relative ease of manipulating the geometry both temporally and spatially using scripts (can be thought of as code execution in relation to specific objects, more on this later). But first an introduction to unity and how it perceives information is needed.
+This chapter focuses on adapting real world mosquito flight data and projecting it into a virtual environment (VE). As stated previously, Unity is chosen for this task due to its flexibility, ease of use and the ability to attach scripts to objects. Scripts hold commands which enable the attached object to move, look and respond in a predefined way. But first an introduction to Unity.
 
 \section{The Unity Platform}
-Unity is predominantly used in game development due to its accessibility and ease of use. It allows for 3D manipulation using scripts written in either JavaScript or C\#. These scripts contain instructions which is then attached to an object making it act according to the script. A script can be written to move an object, change its dimensions, change its speed, and a lot more. 
+Unity is predominantly used in game development to construct complicated environments. It allows for 3D manipulation using scripts written in either JavaScript or C\#. These scripts contain instructions written in these languages which is then attached to an object making it act according to the script. These scripts can be attached to any geometry and are able to share information and interact with each other, even in the more complicated actions.
 
-In the 3D Environment vectors are used to define the spatial coordinates of an object, direction of motion and the magnitude. For example the code:
+Unity uses ``scenes'' to construct the virtual environment. Every scene holds information on object's locations, lighting, script allocations etc. Scenes help package the environmental data together, for example, a scene could be made when the software starts for the first time to help guide the user on how to use the program and when that ends another scene would start which contain the main code.
+
+Vectors are used in the virtual environment to define the spatial coordinates of an object, direction of motion and the magnitude. For example the code:
 
 \begin{minted}[
-linenos, 
+linenos,
 bgcolor=bg,
 fontsize=\footnotesize,
 baselinestretch=1.2]{csharp}
 initialPosition = Vector3(1f, 2f, 3f);
 \end{minted}
 
-Will give the variable \code{initialPosition} a three dimensional coordinate of x=1, y=2 and z=3. The letter (f) after each number indicates a float, meaning the number can be written as a decimal. The vector3 field  is unique to Unity making it easy to associate any value inside the field as a coordinate in the VE. The mosquito data is presented as a three dimensional coordinate in addition to time, hence using the vector3 field would make it possible to display the data points in the virtual environment. 
+Would give the variable \code{initialPosition} a three dimensional coordinate of x=1, y=2 and z=3. That variable can then be assigned to an object to change its location in the 3D environment. The letter (f) after each number indicates a float which is a number that is written as a decimal. The /code{vector3} field  is unique to Unity and it associates the three floats within the field as a Euler coordinate. The raw mosquito data is presented as three dimensional coordinates in addition to time, hence using the \code{vector3} field would make it possible to display the data points in the virtual environment.
 
 \subsection{Moving a sphere in Unity}
-To understand how objects and scripts work I wrote a code to manipulate an object making it move towards another object. First a sphere and a cube is made in the 3D environment. The cube acts as a target for the sphere to move towards. This is done to test the speed, acceleration, weight and drag effects on the sphere as it moves towards the cube. The script should contain these instructions and the expected output is that the sphere will accelerate towards the cube, passing through it, then change direction and repeat the process. Due to the introduction of drag, the sphere should oscillate before coming to a halt exactly in the same position as the cube.
+To understand and test how objects and scripts work I wrote a code to move an object towards another geometry. First a sphere and a cube are created in the 3D environment. The cube will act as a target for the sphere to move towards. This is done to test the speed, acceleration, weight and drag effects on the sphere as it moves towards the cube. The script should contain these instructions and the expected output is that the sphere will accelerate towards the cube, passing through it, then change direction and repeat the process. Due to the introduction of drag, the sphere should oscillate before coming to a halt exactly in the same position as the cube.
 
 \bigskip
 \begin{code1}
 \begin{minted}[
-linenos, 
+linenos,
 bgcolor=bg,
 fontsize=\footnotesize,
 baselinestretch=1.2]{csharp}
@@ -44,17 +46,17 @@ public class ExampleClass : MonoBehaviour {
 \end{code1}
 
 
-Code \ref{code:TestMove} shows one method of moving an object towards another object. The first two lines are called namespaces. They help organise the script and prevent conflict between scripts. Both (UnityEngine) and (System.Collections) are namespaces and the \code{using} function means that anything in the namespace that follows can be used in the script. This is seen in the 5th line of the code where the \code{Transform} function is used without defining what function since the declaration of the function is already done in the (UnityEngine) namespace. 
+Code \ref{code:TestMove} shows one method of moving an object towards another object. The first two lines are called namespaces. They help organise the script and prevent conflict between scripts. Both (UnityEngine) and (System.Collections) are namespaces and the \code{using} function means that anything in the namespace that follows can be used in the script. This is seen in the 5th line of the code where the \code{Transform} function is used without defining what function since the declaration of the function is already done in the (UnityEngine) namespace.
 
 The \code{Transform} variable is used extensively in unity. From the unity documentation, the \code{Transform} variable is described as a method to`manipulate the position, rotation and scale of the object. Every Transform can have a parent, which allows you to apply position, rotation and scale hierarchically.'
 
 The class declaration in the 4th line of the code allows to package the code where it acts as a container for variables and functions. This provides a convenient way to group functions that behave in the same way together, although this is not needed requirement for a class to work. Classes are an organisational tool which is commonly known as object oriented programming (OOP). The main reason for using OOP is to split scripts into smaller pieces which helps in debugging (finding errors). Each of the script would then have a single role to perform, hence, classes should be dedicated to one single task. The word \code{public} before \code{class} makes it so that the class can be called from different scripts and the variables and functions within the class can be called also, in a way the \code{public} makes the class act similarly to namespaces. \code{Public} is also used for \code{Transform} meaning that the Transform can be either defined in the class, as shown in the previous example, or extracted from another object. \code{Target} is the variable name which the \code{Transform} will be assigned to. The float \code{speed} also acts in a similar way, a float extracted from another class can be used to define the variable speed.
 
-The main instructions of the script is written in a function which is called \code{Update} with a return type of \code{void}. \code{Void} does not expect a return type of any type, meaning this function will not spit out a specific value, since it is an instruction for how an object should move we can keep it as void. \code{Update} is a function that is defined in the namespace \code{UnityEngine} and is updated every frame. However, this introduces an issue with low frames per second or FPS. A large scene in unity with different objects acting in unison would cause a drop in FPS making the mosquito data presented less accurate. A common technique to overcome this problem is by the use of \code{Time.deltaTime}. This is a clever function that allows time in the VE to be independent of the frame-rate. A function using \code{Time.deltaTime} would make an object move 10 metres per second instead of 10 metres per frame. 
+The main instructions of the script is written in a function which is called \code{Update} with a return type of \code{void}. \code{Void} does not expect a return type of any type, meaning this function will not spit out a specific value, since it is an instruction for how an object should move we can keep it as void. \code{Update} is a function that is defined in the namespace \code{UnityEngine} and is updated every frame. However, this introduces an issue with low frames per second or FPS. A large scene in unity with different objects acting in unison would cause a drop in FPS making the mosquito data presented less accurate. A common technique to overcome this problem is by the use of \code{Time.deltaTime}. This is a clever function that allows time in the VE to be independent of the frame-rate. A function using \code{Time.deltaTime} would make an object move 10 metres per second instead of 10 metres per frame.
 
-The 9th line would then assign the variable \code{step} with a speed that is updated every second and with a type float meaning it can have integer or decimal values. Since \code{speed} is not declared in this script it must be manually entered by the user to initiate the script. Such is the way \code{public} command works. 
+The 9th line would then assign the variable \code{step} with a speed that is updated every second and with a type float meaning it can have integer or decimal values. Since \code{speed} is not declared in this script it must be manually entered by the user to initiate the script. Such is the way \code{public} command works.
 
-The last command is what makes the attached object move and is made up of several smaller instructions. In line 9, the first part of the code is \code{transform.position} and this is the current object's transform in the virtual world, i.e. the current x,y,z 3D location. The current location is assigned to a new \code{Vector3.MoveTowards(...)} which is a function in the \code{UnityEngine} and makes the object move towards another object in the straight line. The way the function works is that it constantly checks for the distance between the object and the target. If the current object is exactly on the target then it will stop moving instantaneously. This removes any overshoot oscillation which is introduced, on the other hands, it makes the movement less natural since there is no acceleration or deceleration before meeting the target. 
+The last command is what makes the attached object move and is made up of several smaller instructions. In line 9, the first part of the code is \code{transform.position} and this is the current object's transform in the virtual world, i.e. the current x,y,z 3D location. The current location is assigned to a new \code{Vector3.MoveTowards(...)} which is a function in the \code{UnityEngine} and makes the object move towards another object in the straight line. The way the function works is that it constantly checks for the distance between the object and the target. If the current object is exactly on the target then it will stop moving instantaneously. This removes any overshoot oscillation which is introduced, on the other hands, it makes the movement less natural since there is no acceleration or deceleration before meeting the target.
 
 There are three variables inside the movement function; \code{transform.position}, \code{target.position} and \code{step}. The first two variable indicates the start location and the end location respectively while the step indicates the speed of travel. The speed is defined by the \code{public} command while the start location is set as the location of the object and the end location is assigned by choosing another object, in this case, which can be done thanks to line 5. The code does not rely on time to assign the speed since it is predefined by the user. Since the mosquito data is captured with time at each data point then the speed can be calculated as the distance between the two points over the time needed to arrive at the target location.
 
@@ -68,7 +70,7 @@ The mosquito data gathered by my supervisor, Professor David Towers and his team
 \bigskip
 \begin{code1}
 \begin{minted}[
-linenos, 
+linenos,
 bgcolor=bg,
 fontsize=\footnotesize,
 baselinestretch=1.2]{csharp}
@@ -87,13 +89,13 @@ Where x and y is the planar fields and z is the vertical axis. Time is denoted b
 
 The data records more around 333 instances of mosquitoes with around 14 thousand data points. Each data point is followed by the next one within a few milliseconds. Since the time-frame between the data is very small it can be assumed that the momentum and inertia is then captured by the data. Since the mosquito momentum does not have to be simulated it is possible to convert the data from the format above into unity in a relatively straight foreword manner.
 
-First the mosquito data has to be written in a form understood by unity. I chose to use an array that holds all the three dimensional points and another array that holds time. The idea is to progress through both arrays sequentially, i.e., the geometry will stay in an array position and only progress to the next position when the respective time is realised. This will make the object appear in one position and then disappear to reappear in another position. Due to the small time-frame between the data points, the movement should appear smooth. 
+First the mosquito data has to be written in a form understood by unity. I chose to use an array that holds all the three dimensional points and another array that holds time. The idea is to progress through both arrays sequentially, i.e., the geometry will stay in an array position and only progress to the next position when the respective time is realised. This will make the object appear in one position and then disappear to reappear in another position. Due to the small time-frame between the data points, the movement should appear smooth.
 
 An example of the source code used to change the data from text into \code{C\#} is shown in Appendix A. The code looks at the data, line by line, and then makes a \code{Vector3} variable with the appropriate x,y and z dimensional information. The data can then be understood by unity as an array of three dimensional data. The same thing can be done for time as well where the array will display time as a number of floats (decimal values).
 
 \subsection{Testing the Real-Time data in Unity }
 
-To test the code in Unity I first made a 3D bed-net with the appropriate dimensions used in the field. I also made a ground plane to act as the reference for the mosquito data to find out how far above the ground the mosquito flew. These were made in a 3D animation software and then exported into unity. 
+To test the code in Unity I first made a 3D bed-net with the appropriate dimensions used in the field. I also made a ground plane to act as the reference for the mosquito data to find out how far above the ground the mosquito flew. These were made in a 3D animation software and then exported into unity.
 
 \fig{bedWithFly}{Bednet in Unity. The sphere hovering over the bed-net acts as the mosquito with the flight data attached to it.}{0.5}
 
@@ -102,7 +104,7 @@ The first part of Source Code \ref{code:InitialiseArrays} initialises the variab
 \bigskip
 \begin{code1}
 \begin{minted}[
-linenos, 
+linenos,
 bgcolor=bg,
 fontsize=\footnotesize,
 baselinestretch=1.2]{csharp}
@@ -125,12 +127,12 @@ private Vector3[] positionArray = new Vector3[4591];
 
 The temporal and dimensional are assigned to separate arrays and then a code is made to sequentially run through each array in order. The array index is updated when the respective time in the array is equal to the time since the simulation starts, that triggers a command for the next position array to get updated as well.
 
-The \code{void Start () \{...\}} function only runs once at the first frame after starting the simulation. That is when the time and dimensional arrays are initialised. Everything else is running in the function \code{void Update () \{...\}} which is updated every frame. The time since the start of the simulation is assigned to the variable \code{currTime}. The issue with using frames as time measurements is overcome with the use of \code{Time.realtimeSinceStartup} which is set in \code{UnityEngine} and returns times in seconds that is frame-rate independent. 
+The \code{void Start () \{...\}} function only runs once at the first frame after starting the simulation. That is when the time and dimensional arrays are initialised. Everything else is running in the function \code{void Update () \{...\}} which is updated every frame. The time since the start of the simulation is assigned to the variable \code{currTime}. The issue with using frames as time measurements is overcome with the use of \code{Time.realtimeSinceStartup} which is set in \code{UnityEngine} and returns times in seconds that is frame-rate independent.
 
 \bigskip
 \begin{code1}
 \begin{minted}[
-linenos, 
+linenos,
 bgcolor=bg,
 fontsize=\footnotesize,
 baselinestretch=1.2]{csharp}
@@ -150,14 +152,14 @@ void Update () {
 \label{code:c-code}
 \end{code1}
 
- The code activates an if loop which stays active until it runs through all the \code{positionArray} or \code{times} arrays. The loop first checks if the time since the simulation started is larger than the first instance of the \code{times} array. This is seen in \code{currTime>times[posIndex]} where \code{posIndex} is an integer that starts with the value zero but increases by one after every update. When the time is bigger than the first instance of the \code{times} array then the if loop is activated and assigns the position of the object, \code{transform.position}, to the \code{positonArray} with the same index. The \code{scale} variable is used to scale the dimensional data down or up but doesnt affect the raw data since they will be scaled relative to each other. The \code{posIndex} will then be increased by one and the if loop will then exit. The second If loop repeats the whole process when the data exits the range of the array. 
- 
+ The code activates an if loop which stays active until it runs through all the \code{positionArray} or \code{times} arrays. The loop first checks if the time since the simulation started is larger than the first instance of the \code{times} array. This is seen in \code{currTime>times[posIndex]} where \code{posIndex} is an integer that starts with the value zero but increases by one after every update. When the time is bigger than the first instance of the \code{times} array then the if loop is activated and assigns the position of the object, \code{transform.position}, to the \code{positonArray} with the same index. The \code{scale} variable is used to scale the dimensional data down or up but doesnt affect the raw data since they will be scaled relative to each other. The \code{posIndex} will then be increased by one and the if loop will then exit. The second If loop repeats the whole process when the data exits the range of the array.
+
  Initiating the script makes the attached geometry follow the recorded pattern of the fly. The geometry disappears and reappears following the three dimensional locations in the variable \code{positionArray} however there are two issues with this method. One is that if a camera is attached on the geometry to act as the mosquito ``eye'' then the world movement would appear jittery and not very smooth. The other issue is with the data itself. Since more than one mosquito is recorded at the same time, the geometry frequently jumps into another location then back to its current position and repeats the process. Throughout the test of the 4000 data points the geometry cycles between three to four positions hence a better approach would be to use a different geometry for every mosquito. This can be done by using a command to ``spawn'' or generate a new geometry for every new instance of the mosquito data.
- 
+
 \bigskip
 \begin{code1}
 \begin{minted}[
-linenos, 
+linenos,
 bgcolor=bg,
 fontsize=\footnotesize,
 baselinestretch=1.2]{csharp}
@@ -180,7 +182,7 @@ Instantiating the mosquito data to separate geometries could help in identifying
 \bigskip
 \begin{code1}
 \begin{minted}[
-linenos, 
+linenos,
 bgcolor=bg,
 fontsize=\footnotesize,
 baselinestretch=1.2]{csharp}
@@ -192,5 +194,6 @@ void init (){
 \label{code:InstantiateEx}
 \end{code1}
 
-An example of an instantiate command is shown in Source Code \ref{code:InstantiateEx}. This function takes three variables, a geometry to be cloned, the position in the 3D environment and the rotation of the geometry. In  this case \code{object} is the geometry, the location is based of the current array position of \code{positionArray}, depending on the index, and the rotation is based of \code{Quaternion.identity}. \code{Quaternion.identity} is based on the \code{UnityEngine} and it copies the rotation of the parent object or the world rotation.
+An example of an instantiate command is shown in Source Code \ref{code:InstantiateEx}. This function takes three variables, a geometry to be cloned, the position in the 3D environment and the rotation of the geometry. In  this case \code{object} is the geometry, the location is based of the current array position of \code{positionArray}, depending on the index, and the rotation is based of \code{Quaternion.identity}. The function \code{Quaternion.identity} is based on the \code{UnityEngine} and it copies the rotation of the parent object or the world rotation and applies it to the newly cloned object.
 
+When fed into a loop this script creates (Instantiates) the \code{object} into the current \code{positionArray [posIndex]} and repeats for every instance of the array. As it stands the previous \code{objects} would stay in the scene since no command is in place to destroy the previous object. However, this could be useful to construct a trail of the mosquitoes' previously recorded positions. (look into this) 
