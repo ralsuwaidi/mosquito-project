@@ -135,16 +135,62 @@ bgcolor=bg,
 fontsize=\footnotesize,
 baselinestretch=1.2]{csharp}
 ...
-	void Update () {
-		currTime = Time.realtimeSinceStartup;
-		if (currTime>times[posIndex]){
-			transform.position = positionArray [posIndex]/scale;
-			posIndex++;
-			if(posIndex>positionArray.Length){
-				posIndex = 0;
-			}
+void Update () {
+	currTime = Time.realtimeSinceStartup;
+	if (currTime>times[posIndex]){
+         transform.position = positionArray [posIndex]/scale;
+         posIndex++;
+        if(posIndex>positionArray.Length){
+         posIndex = 0;
+        }
+    }
 ...
 \end{minted}
 \captionof{listing}{Changes object's position to match the data.}
 \label{code:c-code}
 \end{code1}
+
+ The code activates an if loop which stays active until it runs through all the \code{positionArray} or \code{times} arrays. The loop first checks if the time since the simulation started is larger than the first instance of the \code{times} array. This is seen in \code{currTime>times[posIndex]} where \code{posIndex} is an integer that starts with the value zero but increases by one after every update. When the time is bigger than the first instance of the \code{times} array then the if loop is activated and assigns the position of the object, \code{transform.position}, to the \code{positonArray} with the same index. The \code{scale} variable is used to scale the dimensional data down or up but doesnt affect the raw data since they will be scaled relative to each other. The \code{posIndex} will then be increased by one and the if loop will then exit. The second If loop repeats the whole process when the data exits the range of the array. 
+ 
+ Initiating the script makes the attached geometry follow the recorded pattern of the fly. The geometry disappears and reappears following the three dimensional locations in the variable \code{positionArray} however there are two issues with this method. One is that if a camera is attached on the geometry to act as the mosquito ``eye'' then the world movement would appear jittery and not very smooth. The other issue is with the data itself. Since more than one mosquito is recorded at the same time, the geometry frequently jumps into another location then back to its current position and repeats the process. Throughout the test of the 4000 data points the geometry cycles between three to four positions hence a better approach would be to use a different geometry for every mosquito. This can be done by using a command to ``spawn'' or generate a new geometry for every new instance of the mosquito data.
+ 
+\bigskip
+\begin{code1}
+\begin{minted}[
+linenos, 
+bgcolor=bg,
+fontsize=\footnotesize,
+baselinestretch=1.2]{csharp}
+x	            y	      z	  t           #
+-172.138	-202.32	 332.681	7.12	0
+-176.265	-200.102	334.039	7.14	0
+-182.679	-221.131	433.988	9.68	1
+-179.363	-221.503	431.284	9.7	 1
+\end{minted}
+\captionof{listing}{Data of two different mosquitoes}
+\label{code:TwoFly}
+\end{code1}
+
+In this case the data records two instances of mosquito location within a few seconds. The first two data points are associated with mosquito No. 0 and the latter two are the second mosquito's positions. When transitioning from one data set into another, from mosquito 0 to mosquito 1, there is a slight jump in the (x,y,z) point which is more prominent than the transition of the same mosquito. This jump is further intensified in the later part of the data and as such a geometry can be generated when a new instance of the mosquito is recorded. To fix the issue with jittering camera, another geometry can be made to follow the mosquito data closely and instead of having the exact same position it could follow the position using an attractive force produced by the mosquito.
+
+\subsection{Instantiating Dimensional Data}
+
+Instantiating the mosquito data to separate geometries could help in identifying different mosquitoes. This is done by cloning the geometry of the mosquito in rapid succession and follow a single path until a new instance of a mosquito appears (when the mosquito number changes). As that happens a new geometry would appear at the instanced location to follow the new path and the previous geometry would pause in its last recorded position until required again.
+
+\bigskip
+\begin{code1}
+\begin{minted}[
+linenos, 
+bgcolor=bg,
+fontsize=\footnotesize,
+baselinestretch=1.2]{csharp}
+void init (){
+		Instantiate(object, positionArray [posIndex], Quaternion.identity);
+	}
+\end{minted}
+\captionof{listing}{Instantiating mosquito dimensional data according to an array}
+\label{code:InstantiateEx}
+\end{code1}
+
+An example of an instantiate command is shown in Source Code \ref{code:InstantiateEx}. This function takes three variables, a geometry to be cloned, the position in the 3D environment and the rotation of the geometry. In  this case \code{object} is the geometry, the location is based of the current array position of \code{positionArray}, depending on the index, and the rotation is based of \code{Quaternion.identity}. \code{Quaternion.identity} is based on the \code{UnityEngine} and it copies the rotation of the parent object or the world rotation.
+
