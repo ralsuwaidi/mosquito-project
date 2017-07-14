@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -11,12 +11,12 @@ public class ini : MonoBehaviour {
 	private int posIndex;
 	private int listLength;
 	public int scale;
+	List<GameObject> IntList;
 
 	//speed
-	private float moveSpeed;
 	private float currTime;
-	private float distance;
 	private float iniTime;
+	private int gameIndex;
 
 	public GameObject flie;
 	void Start () {
@@ -50,15 +50,16 @@ public class ini : MonoBehaviour {
 		inst [4] = 0;
 		inst [5] = 1;
 		inst [6] = 1;
-		inst [7] = 1;
-		inst [8] = 1;
-		inst [9] = 1;
+		inst [7] = 2;
+		inst [8] = 2;
+		inst [9] = 2;
 
 
 
-
+		IntList = new List<GameObject>();
 		posIndex = 0;
 		listLength = positionArray.Length;
+		gameIndex = 0;
 	}
 
 
@@ -66,9 +67,19 @@ public class ini : MonoBehaviour {
 		currTime = Time.realtimeSinceStartup;
 		if (currTime>times[posIndex]){
 			transform.position = positionArray [posIndex]/scale;
-			init ();
+			//init ();
+			if(inst[posIndex]!=inst[posIndex+1]){
+				IntList.Add((GameObject)Instantiate(flie, positionArray [posIndex], Quaternion.identity));
+				gameIndex++;
+			}
+			if(gameIndex>0){
+				IntList[gameIndex-1].transform.position=positionArray [posIndex]/scale;
+			}
+
 			posIndex++;
 		}
+
+
 
 	}
 
