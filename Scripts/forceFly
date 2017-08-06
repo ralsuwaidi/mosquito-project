@@ -1,0 +1,25 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class forceToFly : MonoBehaviour {
+
+    public Transform fly;
+    public Rigidbody rb;
+    public int strength;
+    private Transform d;
+    
+
+
+    // Use this for initialization
+    void Start () {
+        rb = GetComponent<Rigidbody>();
+        d = GetComponent<Transform>();
+    }
+	
+	// Update is called once per frame
+	void Update () {
+        rb.AddForce((fly.transform.position - transform.position).normalized * strength * Time.smoothDeltaTime);
+        d.LookAt(fly);
+    }
+}
